@@ -4,7 +4,9 @@
     "Y":"-85",
     "Z":"200",
     "comp":{
-      "enterable":true
+      "enterable":true,
+      "enterablewhileheist":false,
+      "luckywheeldel":"24h"
     }
   }
 }
