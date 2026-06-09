@@ -4,7 +4,7 @@
     "Y":"-85",
     "Z":"200",
     "comp":{
-      // heres the components what casino has
+      "enterable":true
     }
   }
 }
