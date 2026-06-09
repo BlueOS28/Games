@@ -1,0 +1,3 @@
+[submodule "gta/assets/3D"]
+	path = gta/assets/3D
+	url = https://github.com/ReplicaOS28201/3DENGINE.git
