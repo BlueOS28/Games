@@ -6,7 +6,8 @@
     "comp":{
       "enterable":true,
       "enterablewhileheist":false,
-      "luckywheeldel":"24h"
+      "luckywheeldel":"24h",
+      "luckywheeltexture":"./texture/casino/wheelfr.png"
     }
   }
 }
