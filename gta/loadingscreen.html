@@ -51,14 +51,18 @@
 
         /* Ken Burns / Artwork Panning System */
         .art-container {
-            position: absolute;
-            top: -10%;
-            left: -10%;
-            width: 120%;
-            height: 120%;
-            z-index: 1;
-            will-change: transform;
-        }
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 120%;
+    height: 120%;
+    z-index: 1;
+    will-change: transform;
+    
+    /* ADD THESE TWO LINES */
+    transform-style: preserve-3d;
+    backface-visibility: hidden; /* Prevents flickering during rotations */
+}
 
         .artwork {
             position: absolute;
@@ -271,21 +275,37 @@
         });
 
         function renderLoop() {
-            currentX += (targetX - currentX) * 0.08;
-            currentY += (targetY - currentY) * 0.08;
+    currentX += (targetX - currentX) * 0.08;
+    currentY += (targetY - currentY) * 0.08;
 
-            const rotateX = -currentY * CONFIG.parallaxStrengthFrame;
-            const rotateY = currentX * CONFIG.parallaxStrengthFrame;
-            const transX = currentX * (CONFIG.parallaxStrengthFrame * 0.5);
-            const transY = currentY * (CONFIG.parallaxStrengthFrame * 0.5);
-            stageFrame.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translate3d(${transX}px, ${transY}px, 0)`;
+    // --- 1. STAGE FRAME (Outer Box) ---
+    const rotateX = -currentY * CONFIG.parallaxStrengthFrame;
+    const rotateY = currentX * CONFIG.parallaxStrengthFrame;
+    const transX = currentX * (CONFIG.parallaxStrengthFrame * 0.5);
+    const transY = currentY * (CONFIG.parallaxStrengthFrame * 0.5);
+    
+    stageFrame.style.transform = `translate3d(${transX}px, ${transY}px, 0) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
 
-            const artX = -currentX * CONFIG.parallaxStrengthArt;
-            const artY = -currentY * CONFIG.parallaxStrengthArt;
-            artParallaxBox.style.transform = `translate3d(${artX}px, ${artY}px, 0) scale(1.02)`;
 
-            requestAnimationFrame(renderLoop);
-        }
+    // --- 2. ARTWORK CONTAINER (Inner Move + Rotate) ---
+    // Inverting the math so the background shifts opposite to the frame
+    const artTransX = -currentX * CONFIG.parallaxStrengthArt;
+    const artTransY = -currentY * CONFIG.parallaxStrengthArt;
+    
+    // Subtle rotation for the art layer itself to enhance the dynamic look
+    const artRotateX = currentY * (CONFIG.parallaxStrengthArt * 0.3);
+    const artRotateY = -currentX * (CONFIG.parallaxStrengthArt * 0.3);
+
+    // Combine translation, rotation, and your 1.02 scale
+    artParallaxBox.style.transform = `
+        translate3d(${artTransX}px, ${artTransY}px, 0) 
+        rotateX(${artRotateX}deg) 
+        rotateY(${artRotateY}deg) 
+        scale(1.02)
+    `;
+
+    requestAnimationFrame(renderLoop);
+}
         requestAnimationFrame(renderLoop);
 
 
