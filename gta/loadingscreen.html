@@ -8,6 +8,7 @@
         /* Modern CSS Variables for Design Uniformity */
         :root {
             --gta-pink: #ff0055;
+            --gta-blue: #00f0ff;
             --ui-bg: rgba(2, 2, 2, 0.92);
             --frame-border: rgba(255, 255, 255, 0.08);
             --font-display: 'Arial Black', Gadget, sans-serif;
@@ -33,7 +34,162 @@
             perspective: 1200px;
         }
 
-        /* GAME WINDOW FRAME */
+        /* INTRO CINEMATIC SYSTEM */
+        #intro-sequence {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 1.5s ease-in-out;
+            pointer-events: none;
+        }
+
+        /* Flashing Police Sirens Background */
+        .police-sirens {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            animation: copLights 0.4s infinite steps(2);
+        }
+
+        @keyframes copLights {
+            0% { background-color: rgba(255, 0, 0, 0.25); }
+            50% { background-color: rgba(0, 0, 255, 0.25); }
+        }
+
+        /* Dynamic Sequence Text & Logo Wrapper */
+        .intro-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: #fff;
+            font-family: var(--font-display);
+            width: 80%;
+            max-width: 800px;
+        }
+
+        .intro-text-1, .intro-text-2, .intro-logo, .secondary-logo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .intro-text-1 {
+            font-size: 32px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            animation: introFade 3s forwards 0.5s;
+        }
+
+        .intro-text-2 {
+            font-size: 24px;
+            font-family: var(--font-body);
+            font-weight: 300;
+            line-height: 1.6;
+            color: #ccc;
+            animation: introFade 3.5s forwards 4s;
+        }
+
+        /* Rockstar Styled R Logo Graphic */
+        .intro-logo {
+            animation: logoFadeIn 4s forwards 8s;
+        }
+
+        .r-logo-box {
+            width: 140px;
+            height: 140px;
+            background-color: #fca311;
+            border-radius: 28px;
+            margin: 0 auto;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 40px rgba(252, 163, 17, 0.4);
+        }
+
+        .r-logo-box span {
+            font-size: 110px;
+            color: #000;
+            font-family: 'Arial Black', Impact, sans-serif;
+            font-weight: 900;
+            line-height: 1;
+            margin-top: -10px;
+            margin-left: -10px;
+        }
+
+        .r-star {
+            position: absolute;
+            bottom: 22px;
+            right: 22px;
+            font-size: 38px;
+            color: #fff;
+        }
+
+        /* NEW: SECONDARY LOGO SCREEN */
+        .secondary-logo {
+            animation: logoFadeIn 4s forwards 12s; /* Starts exactly at 12s when Rockstar finishes */
+        }
+
+        .custom-logo-box {
+            width: 150px;
+            height: 150px;
+            border: 4px solid var(--gta-blue);
+            transform: rotate(45deg);
+            margin: 0 auto;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        .custom-logo-inner {
+            transform: rotate(-45deg);
+            color: #fff;
+            font-size: 48px;
+            letter-spacing: 2px;
+            font-weight: 900;
+            text-shadow: 0 0 10px var(--gta-blue);
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.2); border-color: rgba(0, 240, 255, 0.6); }
+            100% { box-shadow: 0 0 40px rgba(0, 240, 255, 0.6); border-color: var(--gta-blue); }
+        }
+
+        /* Intro Keyframe Timings */
+        @keyframes introFade {
+            0% { opacity: 0; visibility: visible; filter: blur(10px); }
+            15% { opacity: 1; filter: blur(0px); }
+            85% { opacity: 1; filter: blur(0px); }
+            100% { opacity: 0; visibility: hidden; filter: blur(10px); }
+        }
+
+        @keyframes logoFadeIn {
+            0% { opacity: 0; visibility: visible; transform: translate(-50%, -50%) scale(0.85); filter: drop-shadow(0 0 0px rgba(255,255,255,0)); }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+            100% { opacity: 0; visibility: hidden; transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+
+        /* MAIN LOADING GAME WINDOW FRAME */
         .game-window-wrapper {
             position: relative;
             width: 88vw;
@@ -46,23 +202,22 @@
             box-shadow: 0 40px 100px rgba(0, 0, 0, 0.95);
             will-change: transform;
             transform-style: preserve-3d;
-            transition: transform 0.1s ease-out;
+            opacity: 0; /* Starts hidden, script will fade it in */
+            transition: opacity 2s ease-in-out, transform 0.1s ease-out;
         }
 
         /* Ken Burns / Artwork Panning System */
         .art-container {
-    position: absolute;
-    top: -10%;
-    left: -10%;
-    width: 120%;
-    height: 120%;
-    z-index: 1;
-    will-change: transform;
-    
-    /* ADD THESE TWO LINES */
-    transform-style: preserve-3d;
-    backface-visibility: hidden; /* Prevents flickering during rotations */
-}
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
+            z-index: 1;
+            will-change: transform;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+        }
 
         .artwork {
             position: absolute;
@@ -173,6 +328,27 @@
 </head>
 <body>
 
+    <div id="intro-sequence">
+        <div class="police-sirens"></div>
+        <div class="intro-content">
+            <div class="intro-text-1">ROCKSTAR GAMES PRESENTS</div>
+            <div class="intro-text-2">A creative chaos environment simulated inside the state of San Andreas. All parameters are fictional representations.</div>
+            
+            <div class="intro-logo">
+                <div class="r-logo-box">
+                    <img src="./assets/Logo/RYellow.png">
+                </div>
+            </div>
+
+            <div class="intro-logo">
+                <div class="r-logo-box">
+                    <img src="./assets/Logo/RBlue.png">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <div class="game-window-wrapper" id="stage-frame">
         
         <div class="art-container" id="art-parallax-box">
@@ -186,7 +362,7 @@
         <div class="hint-hud">
             <div class="hint-hud-header">
                 <h2>Tooltip</h2>
-                
+                <div class="hint-status-ticker" id="ticker-idx">SYS.01</div>
             </div>
             <p id="hint-text">Grand Theft Auto will always reward creative chaos. Try using different structural approaches to your targets.</p>
         </div>
@@ -217,54 +393,33 @@
         const artworks = document.querySelectorAll('.artwork');
         const hintText = document.getElementById('hint-text');
         const tickerIdx = document.getElementById('ticker-idx');
-        const audioEl = document.getElementById('loading-audio');
+        const introSequence = document.getElementById('intro-sequence');
 
         let currentIndex = 0;
 
         /**
-         * 1. STEALTH AUTOPLAY ENGINE
-         * Attempts instant autoplay. If the browser blocks it, it sets up instant-trigger 
-         * background listeners that force playback upon any slight initial user movement.
+         * INTRO CONTROL ENGINE
+         * Manages timeline execution of the components. Extended to accommodate
+         * the second logo transition sequence prior to structural dashboard loading.
          */
-        function forceAutoplay() {
-            const playPromise = audioEl.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    // Autoplay worked immediately without restrictions
-                    cleanAutoplayListeners();
-                }).catch(error => {
-                    // Autoplay stalled by browser policy; wait for first interaction trigger
-                    console.log("Autoplay context waiting for initial interaction gesture...");
-                });
-            }
+        function runIntroTimeline() {
+            // Extended from 12000ms to 16000ms to account for the new logo screen
+            setTimeout(() => {
+                introSequence.style.opacity = '0';
+                stageFrame.style.opacity = '1';
+                
+                // Completely clean elements out of performance tree once invisible
+                setTimeout(() => {
+                    introSequence.style.display = 'none';
+                }, 1500);
+            }, 16000); 
         }
 
-        function handleUserInteraction() {
-            audioEl.play().then(() => {
-                cleanAutoplayListeners();
-            }).catch(e => console.log("Playback engine retry failed: ", e));
-        }
-
-        function cleanAutoplayListeners() {
-            window.removeEventListener('mousemove', handleUserInteraction);
-            window.removeEventListener('click', handleUserInteraction);
-            window.removeEventListener('touchstart', handleUserInteraction);
-            window.removeEventListener('keydown', handleUserInteraction);
-        }
-
-        // Setup immediate trigger hooks
-        window.addEventListener('mousemove', handleUserInteraction);
-        window.addEventListener('click', handleUserInteraction);
-        window.addEventListener('touchstart', handleUserInteraction);
-        window.addEventListener('keydown', handleUserInteraction);
-        
-        // Execute primary run on load
-        window.addEventListener('DOMContentLoaded', forceAutoplay);
-
+        // Initialize Intro
+        window.addEventListener('DOMContentLoaded', runIntroTimeline);
 
         /**
-         * 2. 3D MATH PARALLAX DRIVER ENGINE
+         * 3D MATH PARALLAX DRIVER ENGINE
          */
         let targetX = 0, targetY = 0;
         let currentX = 0, currentY = 0;
@@ -275,42 +430,37 @@
         });
 
         function renderLoop() {
-    currentX += (targetX - currentX) * 0.08;
-    currentY += (targetY - currentY) * 0.08;
+            currentX += (targetX - currentX) * 0.08;
+            currentY += (targetY - currentY) * 0.08;
 
-    // --- 1. STAGE FRAME (Outer Box) ---
-    const rotateX = -currentY * CONFIG.parallaxStrengthFrame;
-    const rotateY = currentX * CONFIG.parallaxStrengthFrame;
-    const transX = currentX * (CONFIG.parallaxStrengthFrame * 0.5);
-    const transY = currentY * (CONFIG.parallaxStrengthFrame * 0.5);
-    
-    stageFrame.style.transform = `translate3d(${transX}px, ${transY}px, 0) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            // --- 1. STAGE FRAME (Outer Box) ---
+            const rotateX = -currentY * CONFIG.parallaxStrengthFrame;
+            const rotateY = currentX * CONFIG.parallaxStrengthFrame;
+            const transX = currentX * (CONFIG.parallaxStrengthFrame * 0.5);
+            const transY = currentY * (CONFIG.parallaxStrengthFrame * 0.5);
+            
+            stageFrame.style.transform = `translate3d(${transX}px, ${transY}px, 0) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
 
+            // --- 2. ARTWORK CONTAINER (Inner Move + Rotate) ---
+            const artTransX = -currentX * CONFIG.parallaxStrengthArt;
+            const artTransY = -currentY * CONFIG.parallaxStrengthArt;
+            
+            const artRotateX = currentY * (CONFIG.parallaxStrengthArt * 0.3);
+            const artRotateY = -currentX * (CONFIG.parallaxStrengthArt * 0.3);
 
-    // --- 2. ARTWORK CONTAINER (Inner Move + Rotate) ---
-    // Inverting the math so the background shifts opposite to the frame
-    const artTransX = -currentX * CONFIG.parallaxStrengthArt;
-    const artTransY = -currentY * CONFIG.parallaxStrengthArt;
-    
-    // Subtle rotation for the art layer itself to enhance the dynamic look
-    const artRotateX = currentY * (CONFIG.parallaxStrengthArt * 0.3);
-    const artRotateY = -currentX * (CONFIG.parallaxStrengthArt * 0.3);
+            artParallaxBox.style.transform = `
+                translate3d(${artTransX}px, ${artTransY}px, 0) 
+                rotateX(${artRotateX}deg) 
+                rotateY(${artRotateY}deg) 
+                scale(1.02)
+            `;
 
-    // Combine translation, rotation, and your 1.02 scale
-    artParallaxBox.style.transform = `
-        translate3d(${artTransX}px, ${artTransY}px, 0) 
-        rotateX(${artRotateX}deg) 
-        rotateY(${artRotateY}deg) 
-        scale(1.02)
-    `;
-
-    requestAnimationFrame(renderLoop);
-}
+            requestAnimationFrame(renderLoop);
+        }
         requestAnimationFrame(renderLoop);
 
-
         /**
-         * 3. REFRESH RATE ASYNC CONTENT SWAPPER
+         * REFRESH RATE ASYNC CONTENT SWAPPER
          */
         function cycleAssets() {
             artworks[currentIndex].classList.remove('active');
