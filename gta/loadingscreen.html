@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Theft Auto V - Advanced Autoplay Loading Screen</title>
+    <style>
+        /* Modern CSS Variables for Design Uniformity */
+        :root {
+            --gta-pink: #ff0055;
+            --ui-bg: rgba(2, 2, 2, 0.92);
+            --frame-border: rgba(255, 255, 255, 0.08);
+            --font-display: 'Arial Black', Gadget, sans-serif;
+            --font-body: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            font-family: var(--font-display);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1200px;
+        }
+
+        /* GAME WINDOW FRAME */
+        .game-window-wrapper {
+            position: relative;
+            width: 88vw;
+            height: 82vh;
+            max-width: 1500px;
+            max-height: 850px;
+            background-color: #020202;
+            overflow: hidden;
+            border: 1px solid var(--frame-border);
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.95);
+            will-change: transform;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
+        }
+
+        /* Ken Burns / Artwork Panning System */
+        .art-container {
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
+            z-index: 1;
+            will-change: transform;
+        }
+
+        .artwork {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transform: scale(1);
+            transition: opacity 2.2s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+        }
+
+        .artwork.active {
+            opacity: 1;
+        }
+
+        /* Cinematic Vignette Overlay */
+        .overlay-vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0,0,0,0) 35%, rgba(0,0,0,0.5) 75%, rgba(0,0,0,0.9) 100%),
+                        linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 25%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* CENTER-LEFT HUD HINT MODULE */
+        .hint-hud {
+            position: absolute;
+            left: 5%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 360px;
+            background-color: var(--ui-bg);
+            border-left: 6px solid var(--gta-pink);
+            padding: 30px;
+            color: #fff;
+            z-index: 10;
+            box-shadow: 10px 10px 30px rgba(0,0,0,0.7);
+            border-radius: 2px;
+        }
+
+        .hint-hud-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+        }
+
+        .hint-hud-header h2 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--gta-pink);
+        }
+
+        .hint-status-ticker {
+            font-size: 9px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #aaa;
+            letter-spacing: 1px;
+        }
+
+        .hint-hud p {
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 1.6;
+            color: #eceff1;
+        }
+
+        /* BOTTOM RIGHT SPINNER HUD */
+        .loader-hud {
+            position: absolute;
+            bottom: 5%;
+            right: 5%;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .spinner-outer {
+            width: 52px;
+            height: 52px;
+            border: 4px solid rgba(255, 255, 255, 0.08);
+            border-left-color: #fff;
+            border-right-color: var(--gta-pink);
+            border-radius: 50%;
+            animation: spin 0.85s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-window-wrapper" id="stage-frame">
+        
+        <div class="art-container" id="art-parallax-box">
+            <div class="artwork active" style="background-image: url('https://images.unsplash.com/photo-1542204172-e7052809a86e?auto=format&fit=crop&w=1920&q=80');"></div>
+            <div class="artwork" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80');"></div>
+            <div class="artwork" style="background-image: url('https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1920&q=80');"></div>
+        </div>
+
+        <div class="overlay-vignette"></div>
+
+        <div class="hint-hud">
+            <div class="hint-hud-header">
+                <h2>Tooltip</h2>
+                
+            </div>
+            <p id="hint-text">Grand Theft Auto will always reward creative chaos. Try using different structural approaches to your targets.</p>
+        </div>
+
+        <div class="loader-hud">
+            <div class="spinner-outer"></div>
+        </div>
+
+    </div>
+
+    <script>
+        const CONFIG = {
+            cycleInterval: 6500, 
+            parallaxStrengthFrame: 25, 
+            parallaxStrengthArt: 15 
+        };
+
+        const hints = [
+            "Grand Theft Auto will always reward creative chaos. Try using different structural approaches to your targets.",
+            "Wasted? Don't worry, the medical institution will patch you up for a small fee, excluding body armor sets.",
+            "Busted? The law enforcement division will confiscate your current tactical ammunition reserves.",
+            "Ammu-Nation is your baseline utility shop. Drop by to restock equipment properties prior to engagement zones.",
+            "Modifying your active vehicle's appearance parameters inside a Pay 'n' Spray is efficient for lowering active heat levels."
+        ];
+
+        const stageFrame = document.getElementById('stage-frame');
+        const artParallaxBox = document.getElementById('art-parallax-box');
+        const artworks = document.querySelectorAll('.artwork');
+        const hintText = document.getElementById('hint-text');
+        const tickerIdx = document.getElementById('ticker-idx');
+        const audioEl = document.getElementById('loading-audio');
+
+        let currentIndex = 0;
+
+        /**
+         * 1. STEALTH AUTOPLAY ENGINE
+         * Attempts instant autoplay. If the browser blocks it, it sets up instant-trigger 
+         * background listeners that force playback upon any slight initial user movement.
+         */
+        function forceAutoplay() {
+            const playPromise = audioEl.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    // Autoplay worked immediately without restrictions
+                    cleanAutoplayListeners();
+                }).catch(error => {
+                    // Autoplay stalled by browser policy; wait for first interaction trigger
+                    console.log("Autoplay context waiting for initial interaction gesture...");
+                });
+            }
+        }
+
+        function handleUserInteraction() {
+            audioEl.play().then(() => {
+                cleanAutoplayListeners();
+            }).catch(e => console.log("Playback engine retry failed: ", e));
+        }
+
+        function cleanAutoplayListeners() {
+            window.removeEventListener('mousemove', handleUserInteraction);
+            window.removeEventListener('click', handleUserInteraction);
+            window.removeEventListener('touchstart', handleUserInteraction);
+            window.removeEventListener('keydown', handleUserInteraction);
+        }
+
+        // Setup immediate trigger hooks
+        window.addEventListener('mousemove', handleUserInteraction);
+        window.addEventListener('click', handleUserInteraction);
+        window.addEventListener('touchstart', handleUserInteraction);
+        window.addEventListener('keydown', handleUserInteraction);
+        
+        // Execute primary run on load
+        window.addEventListener('DOMContentLoaded', forceAutoplay);
+
+
+        /**
+         * 2. 3D MATH PARALLAX DRIVER ENGINE
+         */
+        let targetX = 0, targetY = 0;
+        let currentX = 0, currentY = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            targetX = (e.clientX / window.innerWidth) - 0.5;
+            targetY = (e.clientY / window.innerHeight) - 0.5;
+        });
+
+        function renderLoop() {
+            currentX += (targetX - currentX) * 0.08;
+            currentY += (targetY - currentY) * 0.08;
+
+            const rotateX = -currentY * CONFIG.parallaxStrengthFrame;
+            const rotateY = currentX * CONFIG.parallaxStrengthFrame;
+            const transX = currentX * (CONFIG.parallaxStrengthFrame * 0.5);
+            const transY = currentY * (CONFIG.parallaxStrengthFrame * 0.5);
+            stageFrame.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translate3d(${transX}px, ${transY}px, 0)`;
+
+            const artX = -currentX * CONFIG.parallaxStrengthArt;
+            const artY = -currentY * CONFIG.parallaxStrengthArt;
+            artParallaxBox.style.transform = `translate3d(${artX}px, ${artY}px, 0) scale(1.02)`;
+
+            requestAnimationFrame(renderLoop);
+        }
+        requestAnimationFrame(renderLoop);
+
+
+        /**
+         * 3. REFRESH RATE ASYNC CONTENT SWAPPER
+         */
+        function cycleAssets() {
+            artworks[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex + 1) % artworks.length;
+            artworks[currentIndex].classList.add('active');
+
+            hintText.textContent = hints[currentIndex % hints.length];
+            tickerIdx.textContent = `SYS.0${currentIndex + 1}`;
+        }
+        setInterval(cycleAssets, CONFIG.cycleInterval);
+    </script>
+</body>
+</html>
