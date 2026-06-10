@@ -1,5 +1,6 @@
 {
   "cars":[],
+  "maxcars":10,
   "user-uuid":"1002-1932-2920-3920",
   "stg": {
     "bgclr":"white",
