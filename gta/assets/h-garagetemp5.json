@@ -1,0 +1,10 @@
+{
+  "cars":[],
+  "maxcars":5,
+  "user-uuid":"1002-1932-2920-3920",
+  "stg": {
+    "bgclr":"white",
+    "_comment":"as standard",
+    "lightclr":"lightgrey"
+  }
+}
